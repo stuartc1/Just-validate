@@ -345,6 +345,24 @@
                     });
                 }
 
+                if (item.type === 'select-one') {
+                    value = item.value || '';
+                    item.addEventListener('change', function (ev) {
+                        var elem = ev.target,
+                            item = {
+                                name: elem.getAttribute('data-validate-field'),
+                                value: elem.value
+                            };
+                        delete _this2.result[item.name];
+                        _this2.validateItem({
+                            name: item.name,
+                            value: item.value,
+                            group: []
+                        });
+                        _this2.renderErrors();
+                    });
+                }
+                
                 if (item.type === 'radio') {
                     const findElem = this.elements.filter((item) => {
                         if (item.name === name) {
