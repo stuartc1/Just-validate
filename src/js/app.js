@@ -201,19 +201,29 @@
             }
         },
 
-        getElementsRealValue: function() {
-            let $elems = this.$form.querySelectorAll('*'),
-                name,
+        getElementsRealValue: function getElementsRealValue() {
+            var $elems = this.$form.querySelectorAll('*'),
+                name = void 0,
                 result = {};
-            for (let i = 0, len = $elems.length; i < len; ++i) {
+            for (var i = 0, len = $elems.length; i < len; ++i) {
                 name = $elems[i].getAttribute('name');
                 if (name) {
                     if ($elems[i].type === 'checkbox') {
-                        result[name] = $elems[i].checked;
-                        continue;
+
+                        if ($elems[i].checked) {
+                            if (result[name] == undefined) {
+                                result[name] = $elems[i].value;
+                            } else {
+                                result[name] = result[name] + ',' + $elems[i].value;
+                            }
+                        }
+
+                    } else {
+                        result[name] = $elems[i].value;
                     }
-                    result[name] = $elems[i].value;
+
                 }
+
             }
             return result;
         },
@@ -326,24 +336,6 @@
                     isElemInGroup = false,
                     group = [];
 
-                if (item.type === 'checkbox') {
-                    value = item.checked || '';
-                    item.addEventListener('change', (ev) => {
-                        let elem = ev.target,
-                            item = {
-                                name: elem.getAttribute('data-validate-field'),
-                                value: elem.checked,
-                            };
-
-                        delete this.result[item.name];
-                        this.validateItem({
-                            name: item.name,
-                            value: item.value,
-                            group: [],
-                        });
-                        this.renderErrors();
-                    });
-                }
 
                 if (item.type === 'select-one') {
                     value = item.value || '';
@@ -363,7 +355,7 @@
                     });
                 }
                 
-                if (item.type === 'radio') {
+                if (item.type === 'radio' || item.type === 'checkbox') {
                     const findElem = this.elements.filter((item) => {
                         if (item.name === name) {
                             return item;
